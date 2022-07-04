@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class TodayCollectionViewCell: UICollectionViewCell {
   
@@ -26,7 +27,7 @@ final class TodayCollectionViewCell: UICollectionViewCell {
   
   private lazy var descriptionLabel: UILabel = {
     let label  = UILabel()
-    label.font = .systemFont(ofSize: 24, weight: .bold)
+    label.font = .systemFont(ofSize: 14, weight: .bold)
     label.textColor = .white
     return label
   }()
@@ -40,16 +41,20 @@ final class TodayCollectionViewCell: UICollectionViewCell {
     return imageView
   }()
       
-  func setUp() {
+  func setUp(today: Today) {
     setupSubViews()
     
     layer.shadowColor = UIColor.black.cgColor
     layer.shadowOpacity = 0.3
     layer.shadowRadius = 10
     
-    subTitleLabel.text = "서브타이틀"
-    descriptionLabel.text = "설명설명"
-    titleLabel.text = "앱의 이름"
+    subTitleLabel.text =  today.subTitle
+    descriptionLabel.text = today.description
+    titleLabel.text = today.title
+    
+    if let imageUrl = URL(string: today.imageURL) {
+      imageView.kf.setImage(with: imageUrl)
+    }        
   }
 }
 
@@ -63,13 +68,16 @@ private extension TodayCollectionViewCell {
     }
     
     titleLabel.snp.makeConstraints {
-      $0.leading.equalTo(subTitleLabel)
-      $0.trailing.equalTo(subTitleLabel)
+      $0.leading
+        .trailing
+        .equalTo(subTitleLabel)
       $0.top.equalTo(subTitleLabel.snp.bottom).offset(4.0)
     }
     
     descriptionLabel.snp.makeConstraints {
-      $0.leading.trailing.bottom.equalToSuperview().inset(24)
+      $0.leading
+        .trailing
+        .bottom.equalToSuperview().inset(24)
     }
    
     imageView.snp.makeConstraints {

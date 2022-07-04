@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class FeatureSectionView: UIView {
+  
+  private var featureList: [Feature] = []
   
   private lazy var collectionView: UICollectionView = {
     let layout = UICollectionViewFlowLayout()
@@ -20,14 +23,18 @@ class FeatureSectionView: UIView {
     collectionView.isPagingEnabled = true
     collectionView.backgroundColor = .systemBackground
     collectionView.showsHorizontalScrollIndicator = false
-    collectionView.register(UICollectionViewCell.self,
-                            forCellWithReuseIdentifier: "FeatureSectionCollectionViewCell")
+    collectionView.register(FeatureSectionCollectionViewCell.self, forCellWithReuseIdentifier: "FeatureSectionCollectionViewCell")
     return collectionView
   }()
+  
+  private let separatorView = SeparatorView(frame: .zero)
   
   override init(frame: CGRect) {
     super.init(frame: frame)
     setupViews()
+    
+    fetchData()
+    collectionView.reloadData()
   }
   
   required init(coder: NSCoder) {
@@ -39,14 +46,14 @@ class FeatureSectionView: UIView {
 extension FeatureSectionView: UICollectionViewDataSource {
   
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return 10
+    return featureList.count
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeatureSectionCollectionViewCell", for: indexPath) as? UICollectionViewCell else { return UICollectionViewCell() }
+    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeatureSectionCollectionViewCell", for: indexPath) as? FeatureSectionCollectionViewCell else { return UICollectionViewCell() }
     
-    cell.backgroundColor = .orange
-    
+    let feature = featureList[indexPath.row]
+    cell.setup(feature: feature)
     return cell
   }
 }
@@ -62,7 +69,7 @@ extension FeatureSectionView: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
                       insetForSectionAt section: Int) -> UIEdgeInsets {
-    return UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+    return UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0) // 중앙정렬을 위해서 사용
   }
   
   func collectionView(_ collectionView: UICollectionView,
@@ -75,19 +82,37 @@ extension FeatureSectionView: UICollectionViewDelegateFlowLayout {
 private extension FeatureSectionView {
   func setupViews() {
     
-    [collectionView].forEach {
+    [
+      collectionView,
+      separatorView
+    ].forEach {
       addSubview($0)
     }
     
     collectionView.snp.makeConstraints {
-      $0.leading.trailing.bottom.equalToSuperview()
+      $0.leading
+        .trailing
+        .bottom.equalToSuperview()
       $0.top.equalToSuperview().inset(16)
       $0.height.equalTo(snp.width)
     }
+    
+    separatorView.snp.makeConstraints {
+      $0.leading
+        .trailing
+        .bottom.equalToSuperview()
+      $0.top.equalTo(collectionView.snp.bottom).offset(16.0)
+    }
   }
-}
-
-
-extension FeatureSectionView: UICollectionViewDelegate {
   
+  func fetchData() {
+    guard let url = Bundle.main.url(forResource: "Feature", withExtension: "plist") else { return }    
+    do {
+      let data = try Data(contentsOf: url)
+      let result = try PropertyListDecoder().decode([Feature].self, from: data)
+      featureList = result
+    } catch {
+      print(error.localizedDescription)
+    }
+  }
 }
