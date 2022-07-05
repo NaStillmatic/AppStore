@@ -12,10 +12,10 @@ final class AppViewController: UIViewController {
   private let scrollView = UIScrollView()
   private let contentView = UIView()
   private lazy var stackView: UIStackView = {
-    let statckView = UIStackView()
-    statckView.axis = .vertical
-    statckView.distribution = .equalSpacing
-    statckView.spacing = 0.0
+    let stackView = UIStackView()
+    stackView.axis = .vertical
+    stackView.distribution = .equalSpacing
+    stackView.spacing = 0.0
     
     let featureSectionView = FeatureSectionView(frame: .zero)
     let rankingFeatureSectionView = RankingFeatureSectionView(frame: .zero)
