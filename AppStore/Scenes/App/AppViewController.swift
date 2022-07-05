@@ -32,9 +32,9 @@ final class AppViewController: UIViewController {
       exchangeCodeButtonView,
       spacingView
     ].forEach {
-      statckView.addArrangedSubview($0)
+      stackView.addArrangedSubview($0)
     }
-    return statckView
+    return stackView
   }()
  
   override func viewDidLoad() {
